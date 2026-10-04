@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="単語帳「Everyday Verbs 50」の50動詞を使った4択の問題集。1動詞1問、解説付き。">
+<title>Everyday Verbs 50 問題集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: companion workbook to the vocabulary book — same paper and ink, one ruled row per question, choices as a 2×2 answer grid, score in a slim sticky bar */
+:root {
+  --paper: #FCFCFA;
+  --ink: #1B1B1A;
+  --sub: #6E6D68;
+  --rule: #E3E2DC;
+  --red: #D7381C;
+  --ok: #1F7A4D;
+  --ok-soft: #E4F2EA;
+  --ng-soft: #FBE7E2;
+  --font-en: "Libre Caslon Text", "Times New Roman", Georgia, serif;
+  --font-ja: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #151514; --ink: #ECEBE6; --sub: #9B9A94; --rule: #2C2C2A; --red: #FF6A4D;
+    --ok: #6CCB9C; --ok-soft: #17302A; --ng-soft: #3A1E18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #151514; --ink: #ECEBE6; --sub: #9B9A94; --rule: #2C2C2A; --red: #FF6A4D;
+  --ok: #6CCB9C; --ok-soft: #17302A; --ng-soft: #3A1E18;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-ja); font-size: 15px; line-height: 1.75;
+  padding-inline: 16px; padding-block: 0 72px;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 860px; margin: 0 auto; }
+a { color: inherit; }
+
+header { padding-block: 56px 28px; display: grid; gap: 14px; }
+.kicker { font-size: 13px; color: var(--sub); }
+h1 { margin: 0; font-family: var(--font-en); font-weight: 400; font-size: clamp(36px, 7vw, 64px); line-height: 1.05; letter-spacing: -0.01em; }
+h1 i { color: var(--red); }
+h1 small { display: block; font-family: var(--font-ja); font-size: .38em; font-weight: 700; letter-spacing: .04em; margin-top: 10px; }
+.lead { margin: 0; max-width: 60ch; color: var(--sub); }
+.lead a { color: var(--ink); text-underline-offset: 3px; }
+
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--paper); border-block: 1px solid var(--ink);
+  padding-block: 10px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+}
+.score { font-size: 13.5px; font-variant-numeric: tabular-nums; flex: 1 1 auto; }
+.score b { font-family: var(--font-en); font-size: 20px; font-weight: 700; margin-inline: 2px; }
+.score .ok { color: var(--ok); }
+.btn {
+  font: 700 13px var(--font-ja); cursor: pointer; border: 1px solid var(--ink); border-radius: 2px;
+  background: transparent; color: var(--ink); padding: 6px 12px;
+}
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.btn.quiet { border-color: var(--rule); color: var(--sub); }
+.btn:focus-visible, .choice:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+.q {
+  display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px 24px;
+  padding-block: 26px; border-bottom: 1px solid var(--rule);
+}
+.q-meta { display: grid; gap: 2px; align-content: start; }
+.q-num { font-family: var(--font-en); font-size: 15px; font-variant-numeric: tabular-nums lining-nums; }
+.q-verb { font-family: var(--font-en); font-style: italic; font-size: 13px; color: var(--sub); }
+.q-body { display: grid; gap: 12px; min-width: 0; }
+.q-type { font-size: 12px; color: var(--sub); letter-spacing: .06em; }
+.q-en { font-family: var(--font-en); font-size: 19px; line-height: 1.5; margin: 0; }
+.q-en u { text-decoration-thickness: 1.5px; text-underline-offset: 4px; font-weight: 700; }
+.blank { display: inline-block; min-width: 4.5em; border-bottom: 1.5px solid var(--ink); }
+
+.choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.choice {
+  display: flex; gap: 10px; align-items: baseline; text-align: left; cursor: pointer;
+  font: 15px/1.5 var(--font-ja); color: var(--ink); background: transparent;
+  border: 1px solid var(--rule); border-radius: 2px; padding: 10px 12px; min-width: 0;
+}
+.choice:hover:not(:disabled) { border-color: var(--ink); }
+.choice:disabled { cursor: default; }
+.choice .k { font-family: var(--font-en); color: var(--sub); }
+.choice.en-choice span:last-child { font-family: var(--font-en); font-size: 16px; }
+.choice.is-right { border-color: var(--ok); background: var(--ok-soft); }
+.choice.is-wrong { border-color: var(--red); background: var(--ng-soft); }
+.choice:disabled:not(.is-right):not(.is-wrong) { opacity: .55; }
+
+.result { display: grid; gap: 4px; border-left: 2px solid var(--rule); padding-left: 14px; }
+.verdict { font-weight: 700; }
+.verdict.ok { color: var(--ok); }
+.verdict.ng { color: var(--red); }
+.ja { color: var(--sub); font-size: 13.5px; }
+.why { font-size: 14px; }
+.why::before { content: "※ "; color: var(--red); }
+
+.empty { color: var(--sub); padding-block: 48px; }
+.done { margin-top: 40px; padding: 24px 0; border-top: 1px solid var(--ink); display: grid; gap: 6px; }
+.done strong { font-family: var(--font-en); font-size: 32px; font-weight: 700; }
+footer { margin-top: 48px; font-size: 13.5px; color: var(--sub); display: grid; gap: 6px; max-width: 62ch; }
+
+@media (max-width: 640px) {
+  .q { grid-template-columns: minmax(0, 1fr); gap: 10px; padding-block: 22px; }
+  .q-meta { grid-auto-flow: column; justify-content: start; gap: 12px; align-items: baseline; }
+  .choices { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Everyday Verbs 50 の問題集 ・ 4択 50問 ・ 解説付き</div>
+    <h1>Everyday <i>Verbs</i> 50<small>問題集</small></h1>
+    <p class="lead">単語帳の50動詞から1問ずつ出題しています。選択肢をタップするとすぐに正解と解説が出ます。間違えた問題は単語帳で見直しましょう。<br>単語帳：<a href="https://a20020404a-del.github.io/everyday-verbs/">Everyday Verbs 50</a></p>
+  </header>
+
+  <div class="bar">
+    <div class="score" id="score"></div>
+    <button class="btn" id="wrongOnly" type="button" aria-pressed="false">間違えた問題だけ</button>
+    <button class="btn quiet" id="reset" type="button">最初から解き直す</button>
+  </div>
+
+  <main id="list"></main>
+  <div id="done"></div>
+
+  <footer>
+    <span>問題の種類は2つです。「空欄に入る語」は文に合う動詞や形を選ぶ問題、「下線部の意味」は文の中でその動詞がどの意味で使われているかを選ぶ問題です。</span>
+    <span>解答の記録は、このブラウザにだけ保存されます。</span>
+  </footer>
+</div>
+
+<script>
+// [動詞, 種類 "fill"|"mean", 英文（___ = 空欄、**語** = 下線）, 和訳, [選択肢4つ], 正解の番号, 解説]
+const QS = [
+  ["get","mean","I didn't **get** the joke.","その冗談がわからなかった。",["手に入れた","理解した","着いた","買った"],1,"get には「理解する」の意味があります。I get it.（わかった）もよく使います。"],
+  ["take","fill","How long does it ___ to get to the airport?","空港までどのくらいかかりますか？",["take","spend","need","make"],0,"「（時間が）かかる」は It takes + 時間。spend は人が主語で「時間を過ごす・使う」です。"],
+  ["make","fill","Don't worry. We'll ___ it on time.","心配しないで。時間までに間に合うよ。",["make","take","get","do"],0,"make it で「間に合う・うまくいく」。"],
+  ["have","mean","Let's **have** lunch together.","一緒にお昼を食べよう。",["持つ","食べる","経験する","開く"],1,"have + 食事・飲み物で「食べる・飲む」。eat より自然によく使います。"],
+  ["give","fill","Please don't ___ up. You're almost there.","諦めないで。あと少しだよ。",["give","take","put","keep"],0,"give up で「諦める」。"],
+  ["put","fill","The game was ___ off because of the rain.","雨のため試合は延期された。",["put","taken","given","kept"],0,"put off で「延期する」。put は原形・過去形・過去分詞がすべて put です。"],
+  ["keep","fill","She ___ talking during the whole movie.","彼女は映画の間ずっとしゃべり続けていた。",["kept","stayed","held","left"],0,"keep + -ing で「〜し続ける」。過去形は kept。"],
+  ["bring","fill","Can you ___ some snacks when you come to my house?","うちに来るとき、お菓子を持ってきてくれる？",["bring","take","carry","send"],0,"話し手のいる場所に「持ってくる」のは bring。向こうへ「持っていく」なら take。"],
+  ["go","mean","Milk **goes** bad quickly in summer.","夏は牛乳がすぐに悪くなる。",["行く","〜になる","なくなる","合う"],1,"go + 形容詞で「（悪い状態に）なる」。go bad（腐る）、go wrong（うまくいかない）。"],
+  ["come","fill","That's a great idea! How did you ___ up with it?","すごくいいアイデアだね！どうやって思いついたの？",["come","go","get","make"],0,"come up with で「（考えを）思いつく」。"],
+  ["let","fill","Please ___ me know when you arrive.","着いたら知らせてね。",["let","make","have","tell"],0,"let me know で「知らせて」。tell なら tell me when you arrive の形になります。"],
+  ["leave","mean","I **left** my umbrella on the train.","電車に傘を置き忘れた。",["出発した","辞めた","置き忘れた","任せた"],2,"leave + 物 + 場所で「〜に置き忘れる」。forget は場所と一緒には使いにくいので、この形では leave を使います。"],
+  ["say","fill","What does the sign ___?","看板には何て書いてある？",["say","tell","talk","speak"],0,"看板・手紙・本などに「書いてある」は say を使います。"],
+  ["tell","fill","Can you ___ me how to use this machine?","この機械の使い方を教えてくれる？",["tell","say","talk","explain"],0,"tell + 人 + how to で「やり方を教える」。explain は explain to me の形になるので、ここでは使えません。"],
+  ["talk","fill","Let's ___ about it over dinner.","夕食を食べながらそのことを話そう。",["talk","say","tell","mention"],0,"talk about で「〜について話し合う」。mention は about をつけずに mention it とします。"],
+  ["ask","fill","He ___ her out on a date last week.","彼は先週、彼女をデートに誘った。",["asked","told","said","talked"],0,"ask + 人 + out で「デートに誘う」。"],
+  ["explain","fill","Could you ___ to me why you were late?","なぜ遅れたのか説明してもらえますか？",["explain","tell","say","talk"],0,"explain to + 人 で「人に説明する」。tell なら tell me why と to は不要です。"],
+  ["mention","mean","She's smart, not to **mention** kind.","彼女は頭がいいし、優しいのは言うまでもない。",["言うまでもなく","言わないで","〜ではなく","名前を挙げて"],0,"not to mention で「〜は言うまでもなく」。"],
+  ["agree","fill","I ___ with you completely.","あなたに完全に賛成です。",["agree","think","suggest","accept"],0,"agree with + 人 で「人に同意する」。accept は with をとりません。"],
+  ["suggest","fill","I ___ we take a taxi. It's raining.","タクシーで行こうよ。雨が降ってるし。",["suggest","ask","tell","want"],0,"suggest (that) + 主語 + 動詞 で「〜しようと提案する」。want や tell はこの形をとりません。"],
+  ["think","fill","I can't ___ of his name right now.","今、彼の名前が思い出せない。",["think","know","remember","forget"],0,"think of で「思いつく・思い出す」。remember は of をとりません。"],
+  ["know","mean","**You know**, I've always wanted to go to Hawaii.","ほら、ずっとハワイに行きたかったんだよね。",["知っている","ほら・あのね","理解している","見分けがつく"],1,"you know は会話のつなぎ言葉で「ほら・あのね」。"],
+  ["feel","fill","I don't ___ like going out tonight.","今夜は出かける気分じゃない。",["feel","think","want","look"],0,"feel like + -ing で「〜したい気分だ」。"],
+  ["mean","mean","Your support **means** a lot to me.","あなたの支えは私にとってとても大切です。",["意味する","本気で言う","大切だ・重要である","〜するつもりだ"],2,"mean a lot to + 人 で「人にとってとても大切だ」。"],
+  ["mind","fill","Would you ___ closing the door?","ドアを閉めていただけますか？",["mind","like","want","care"],0,"Would you mind + -ing? は丁寧な依頼。「いいですよ」と答えるときは Not at all. です。"],
+  ["wonder","fill","No ___ you're tired. You worked all day.","疲れてるのも無理はないよ。一日中働いてたんだから。",["wonder","doubt","surprise","idea"],0,"No wonder ... で「〜なのも当然だ・どうりで」。"],
+  ["remember","fill","___ to turn off the lights when you leave.","出かけるときは忘れずに電気を消してね。",["Remember","Remind","Keep","Try"],0,"remember to + 動詞で「忘れずに〜する」。remind は remind me to のように人が必要です。"],
+  ["forget","fill","I'll never ___ the day we first met.","初めて会った日のことは絶対に忘れない。",["forget","remember","miss","lose"],0,"never forget で「決して忘れない」。"],
+  ["worry","fill","Don't ___. Everything will be fine.","心配しないで。全部うまくいくよ。",["worry","mind","care","fear"],0,"Don't worry. で「心配しないで」。Don't care. は「気にするな・どうでもいい」に近く、意味が変わります。"],
+  ["hope","fill","I ___ you have a great trip!","素敵な旅行になりますように！",["hope","wish","want","expect"],0,"hope + 文 で「〜だといいな」。wish を使うなら I wish you a great trip! の形になります。"],
+  ["see","mean","Are you **seeing** anyone right now?","今、誰かと付き合ってる？",["見ている","付き合っている","わかっている","確かめている"],1,"be seeing + 人 で「（恋人として）付き合っている」。"],
+  ["look","fill","Could you ___ after my dog while I'm away?","留守の間、犬の世話をしてもらえますか？",["look","take","see","watch"],0,"look after で「世話をする」。take なら take care of になります。"],
+  ["use","fill","I ___ to play tennis every weekend, but now I don't.","以前は毎週末テニスをしていたけど、今はしていない。",["used","use","was used","am used"],0,"used to + 動詞で「以前は〜していた」。be used to + -ing（〜に慣れている）と区別しましょう。"],
+  ["need","fill","This room needs ___.","この部屋は掃除が必要だ。",["cleaning","clean","cleaned","to clean"],0,"need + -ing で「〜される必要がある」。needs to be cleaned と同じ意味です。"],
+  ["try","fill","Why don't you ___ on this jacket? It might fit you.","このジャケット着てみたら？サイズが合うかもよ。",["try","wear","test","check"],0,"try on で「試着する」。wear は on をとりません。"],
+  ["wait","fill","I can't ___ to see you again!","また会えるのが待ちきれない！",["wait","hope","stay","stop"],0,"can't wait to + 動詞で「〜するのが待ちきれない・楽しみ」。"],
+  ["check","fill","What time do we have to ___ out of the hotel?","ホテルは何時にチェックアウトしなければいけませんか？",["check","look","sign","stay"],0,"check out で「（ホテルを）チェックアウトする」。"],
+  ["spend","fill","I ___ two hours doing my homework last night.","昨夜は宿題に2時間かけた。",["spent","took","used","paid"],0,"spend + 時間 + -ing で「〜して時間を過ごす」。take なら It took me two hours to do my homework. の形です。"],
+  ["pay","fill","Please ___ attention to the next announcement.","次のアナウンスにご注意ください。",["pay","give","take","make"],0,"pay attention to で「〜に注意を払う」。"],
+  ["stay","fill","I ___ up all night watching movies.","映画を見て徹夜した。",["stayed","kept","got","woke"],0,"stay up で「夜更かしする・起きている」。get up は「起き上がる」です。"],
+  ["work","mean","The medicine **worked** quickly.","その薬はすぐに効いた。",["働いた","勉強した","効いた","動いた"],2,"work には「効果がある・うまくいく」の意味があります。"],
+  ["help","fill","I couldn't ___ laughing at his joke.","彼の冗談に笑わずにはいられなかった。",["help","mind","hope","need"],0,"can't help + -ing で「〜せずにいられない」。"],
+  ["start","fill","OK, everyone. Let's get ___!","さあみんな、始めよう！",["started","start","starting","to start"],0,"get started で「始める」。決まった言い方として覚えましょう。"],
+  ["finish","fill","Have you finished ___ the report?","レポートは書き終わった？",["writing","to write","write","written"],0,"finish の後ろは -ing。finish to write とは言いません。"],
+  ["change","mean","Where can I **change** yen into dollars?","どこで円をドルに両替できますか？",["交換する","両替する","乗り換える","着替える"],1,"change A into B（お金）で「AをBに両替する」。"],
+  ["decide","fill","We decided ___ to Okinawa this summer.","今年の夏は沖縄に行くことにした。",["to go","going","go","went"],0,"decide の後ろは to + 動詞。decide going とは言いません。"],
+  ["handle","mean","She **handles** customer complaints at work.","彼女は職場で客からの苦情を担当している。",["手で触る","担当する・対処する","運ぶ","壊す"],1,"handle は「（仕事・問題を）扱う・担当する」。"],
+  ["miss","mean","You can't **miss** it. It's a big red building.","絶対わかるよ。大きな赤い建物だから。",["寂しく思う","乗り遅れる","見逃す・見落とす","欠席する"],2,"You can't miss it. は道案内の定番で「見落としようがない＝すぐわかる」。"],
+  ["catch","mean","Let's **catch up** over coffee sometime.","今度コーヒーでも飲みながら近況を話そうよ。",["追いかけよう","近況を話そう","捕まえよう","間に合わせよう"],1,"catch up は「追いつく」のほか、久しぶりに会って「近況を話す」の意味でよく使います。"],
+  ["run","fill","We've ___ out of sugar. Can you buy some?","砂糖が切れちゃった。買ってきてくれる？",["run","ran","running","runs"],0,"have + 過去分詞の形。run の過去分詞は run です（run – ran – run）。"],
+];
+
+const PERMS = [[1,3,0,2],[2,0,3,1],[3,1,2,0],[0,2,1,3],[1,0,3,2],[2,3,1,0],[3,2,0,1],[0,3,2,1],[2,1,0,3],[1,2,3,0],[3,0,1,2]];
+
+const KEY = "everyday-verbs-quiz";
+let answers = {};
+try { answers = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(answers)); } catch (e) {} };
+
+let wrongOnly = false;
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<u>$1</u>").replace("___", '<span class="blank" aria-label="空欄"></span>');
+
+function question(q, i) {
+  const [verb, type, en, ja, choices, right, why] = q;
+  const a = answers[i];
+  const answered = a !== undefined;
+  // 正解の位置が偏らないよう、問題ごとに決まった順番で並べ替える
+  const order = PERMS[(i * 7 + 3) % PERMS.length];
+  const pos = k => order.indexOf(k);
+  const btns = order.map((k, d) => { const c = choices[k];
+    let cls = "choice" + (type === "fill" ? " en-choice" : "");
+    if (answered && k === right) cls += " is-right";
+    else if (answered && k === a) cls += " is-wrong";
+    return `<button class="${cls}" type="button" data-i="${i}" data-k="${k}"${answered ? " disabled" : ""}><span class="k">${"abcd"[d]}</span><span>${esc(c)}</span></button>`;
+  }).join("");
+  const result = answered ? `<div class="result">
+      <span class="verdict ${a === right ? "ok" : "ng"}">${a === right ? "正解" : `不正解　正解は ${"abcd"[pos(right)]}. ${esc(choices[right])}`}</span>
+      <span class="ja">${esc(ja)}</span>
+      <span class="why">${esc(why)}</span>
+    </div>` : "";
+  return `<article class="q" id="q${i + 1}">
+    <div class="q-meta"><span class="q-num">Q.${String(i + 1).padStart(2, "0")}</span><span class="q-verb">${esc(verb)}</span></div>
+    <div class="q-body">
+      <span class="q-type">${type === "fill" ? "空欄に入る語を選ぼう" : "下線部の意味を選ぼう"}</span>
+      <p class="q-en">${fmt(en)}</p>
+      <div class="choices">${btns}</div>
+      ${result}
+    </div>
+  </article>`;
+}
+
+function render() {
+  const items = QS.map((q, i) => [q, i]).filter(([q, i]) => !wrongOnly || (answers[i] !== undefined && answers[i] !== q[5]));
+  document.getElementById("list").innerHTML = items.length
+    ? items.map(([q, i]) => question(q, i)).join("")
+    : `<p class="empty">${wrongOnly ? "間違えた問題はありません。" : ""}</p>`;
+  const n = Object.keys(answers).length;
+  const ok = QS.filter((q, i) => answers[i] === q[5]).length;
+  document.getElementById("score").innerHTML = `正解<b class="ok">${ok}</b>　回答済み<b>${n}</b>/ 50`;
+  document.getElementById("done").innerHTML = n === QS.length
+    ? `<div class="done"><span>50問すべて解き終わりました</span><strong>${ok} / 50</strong><span>${ok === 50 ? "全問正解です。" : `間違えた${50 - ok}問は「間違えた問題だけ」で見直せます。`}</span></div>` : "";
+}
+
+document.getElementById("list").addEventListener("click", e => {
+  const b = e.target.closest(".choice");
+  if (!b || b.disabled) return;
+  const i = +b.dataset.i;
+  answers[i] = +b.dataset.k; save();
+  render();
+});
+const wrongBtn = document.getElementById("wrongOnly");
+wrongBtn.addEventListener("click", () => {
+  wrongOnly = !wrongOnly; wrongBtn.setAttribute("aria-pressed", wrongOnly); render();
+});
+const resetBtn = document.getElementById("reset");
+resetBtn.addEventListener("click", () => {
+  if (resetBtn.dataset.armed) {
+    answers = {}; save(); wrongOnly = false; wrongBtn.setAttribute("aria-pressed", "false");
+    delete resetBtn.dataset.armed; resetBtn.textContent = "最初から解き直す"; render();
+  } else {
+    resetBtn.dataset.armed = "1"; resetBtn.textContent = "もう一度押すとリセット";
+    setTimeout(() => { delete resetBtn.dataset.armed; resetBtn.textContent = "最初から解き直す"; }, 3000);
+  }
+});
+
+render();
+</script>
+</body>
+</html>
