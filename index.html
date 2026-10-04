@@ -112,7 +112,7 @@ footer { margin-top: 48px; font-size: 13.5px; color: var(--sub); display: grid; 
   <header>
     <div class="kicker">Everyday Verbs 50 の問題集 ・ 英訳 50問 ・ 模範解答と解説付き</div>
     <h1>Everyday <i>Verbs</i> 50<small>問題集</small></h1>
-    <p class="lead">単語帳の50動詞を使って、日本語の文を英語にする問題です。英文を書くか声に出してから「答えを見る」を押し、模範解答と比べて「できた／まちがえた」を選びましょう。間違えた問題は単語帳で見直せます。<br>単語帳：<a href="https://a20020404a-del.github.io/everyday-verbs/">Everyday Verbs 50</a></p>
+    <p class="lead">単語帳の50動詞を使って、日本語の文を英語にする問題です。英文を書くか声に出してから「答えを見る」を押し（もう一度押すと隠れます）、模範解答と比べて「できた／まちがえた」を選びましょう。間違えた問題は単語帳で見直せます。<br>単語帳：<a href="https://a20020404a-del.github.io/everyday-verbs/">Everyday Verbs 50</a></p>
   </header>
 
   <div class="bar">
@@ -201,7 +201,9 @@ function question(q, i) {
   const [verb, ja, en, why] = q;
   const s = state[i] || {};
   const cls = s.mark === "ok" ? " is-ok" : s.mark === "ng" ? " is-ng" : "";
-  const answer = s.open ? `<div class="answer">
+  const toggle = `<button class="btn" type="button" data-act="open" data-i="${i}" aria-expanded="${!!s.open}">${s.open ? "答えを隠す" : "答えを見る"}</button>`;
+  const answer = s.open ? `<div class="actions">${toggle}</div>
+    <div class="answer">
       <span class="label">模範解答</span>
       <span class="model">${bold(en)}</span>
       ${s.text ? `<span class="mine">あなたの答え：${esc(s.text)}</span>` : ""}
@@ -211,7 +213,7 @@ function question(q, i) {
       <span class="ask">自己採点：</span>
       <button class="btn ok-btn" type="button" data-act="ok" data-i="${i}" aria-pressed="${s.mark === "ok"}">できた</button>
       <button class="btn ng-btn" type="button" data-act="ng" data-i="${i}" aria-pressed="${s.mark === "ng"}">まちがえた</button>
-    </div>` : `<div class="actions"><button class="btn" type="button" data-act="open" data-i="${i}">答えを見る</button></div>`;
+    </div>` : `<div class="actions">${toggle}${s.mark ? `<span class="ask">${s.mark === "ok" ? "できた" : "まちがえた"}</span>` : ""}</div>`;
   return `<article class="q${cls}" id="q${i + 1}">
     <div class="q-meta"><span class="q-num">Q.${String(i + 1).padStart(2, "0")}</span><span class="q-verb">${esc(verb)}</span></div>
     <div class="q-body">
@@ -259,7 +261,7 @@ list.addEventListener("keydown", e => {
 list.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b) return;
   const i = +b.dataset.i, act = b.dataset.act, s = st(i);
-  if (act === "open") s.open = true;
+  if (act === "open") s.open = !s.open;
   else s.mark = s.mark === act ? undefined : act;
   save(); redraw(i);
 });
